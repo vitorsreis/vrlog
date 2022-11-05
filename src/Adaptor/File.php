@@ -74,7 +74,8 @@ class File implements IAdaptor
      */
     public static function request($docId, $data)
     {
-        return error_log(json_encode($data), 3, self::$dir . 'req.log');
+        $flag = filter_var(DotEnv::get('VRLOG_FILE_PRETTY'), FILTER_VALIDATE_BOOLEAN) ? JSON_PRETTY_PRINT : 0;
+        return error_log(json_encode($data, $flag), 3, self::$dir . 'req.log');
     }
 
     /**
@@ -95,6 +96,7 @@ class File implements IAdaptor
      */
     public static function response($docId, $data)
     {
-        return error_log(json_encode($data), 3, self::$dir . 'res.log');
+        $flag = filter_var(DotEnv::get('VRLOG_FILE_PRETTY'), FILTER_VALIDATE_BOOLEAN) ? JSON_PRETTY_PRINT : 0;
+        return error_log(json_encode($data, $flag), 3, self::$dir . 'res.log');
     }
 }

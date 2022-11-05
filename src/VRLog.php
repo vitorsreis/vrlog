@@ -65,7 +65,7 @@ class VRLog
         DotEnv::bootstrap(__DIR__ . '/../.env');
 
         # SET SKIP ULL LOG
-        self::setTolerance(DotEnv::get('VRLOG_TOLERANCE') ?: false);
+        self::setTolerance(intval(DotEnv::get('VRLOG_TOLERANCE')) ?: false);
 
         # GET START TIME
         if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
@@ -345,7 +345,7 @@ class VRLog
      */
     public static function ex($err)
     {
-        if (DotEnv::get('VRLOG_ELK_SERVER')) {
+        if (filter_var(DotEnv::get('VRLOG_ELK_SERVER'), FILTER_VALIDATE_BOOLEAN)) {
             throw new \Exception("VRLog: $err", E_ERROR);
         } else {
             error_log('[' . date('Y-m-d H:i:s') . "] VRLog: $err" . PHP_EOL);

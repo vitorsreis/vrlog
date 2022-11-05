@@ -1,6 +1,6 @@
 {
   "name": "vitorsreis/vrlog",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "VRLog - PHP Full AccessLog",
   "type": "library",
   "license": "MIT",
