@@ -9,21 +9,23 @@ Simple library to log hits in your php code, logging input, output, errors and e
     VRLog\VRLog::bootstrap();
 
 ## Default log input values
-| Key        |  Type   | Adaptor                                      |
-|:-----------|:-------:|----------------------------------------------|
-| start_date | string  | Start date (YYYY-MM-DDTHH:mm:ss+00:00Z)      |
-| start_time |  float  | Start timestamp                              |
-| method     | ?string | Request Method                               |
-| url        | ?array  | URL (scheme:string, host:string, uri:string) |
-| ip         | ?string | Remote IP                                    |
-| referer    | ?string | Remote Referer                               |
-| useragent  | ?string | Remote User-Agent                            |
-| get        | ?array  | Query data                                   |
-| post       | ?array  | Post data                                    |
-| rawpost    | ?array  | Post raw data (php://input)                  |
-| files      | ?array  | Files data                                   |
-| cookies    | ?array  | Cookies data                                 |
-| server     | ?array  | Server data                                  |
+| Key          |  Type   | Adaptor                                 |
+|:-------------|:-------:|-----------------------------------------|
+| start_date   | string  | Start date (YYYY-MM-DDTHH:mm:ss+00:00Z) |
+| start_time   |  float  | Start timestamp                         |
+| method       | ?string | Request Method                          |
+| url\[scheme] | ?string | URL Scheme                              |
+| url\[host]   | ?string | URL Host                                |
+| url\[uri]    | ?string | URI                                     |
+| ip           | ?string | Remote IP                               |
+| referer      | ?string | Remote Referer                          |
+| useragent    | ?string | Remote User-Agent                       |
+| get          | ?array  | Query data                              |
+| post         | ?array  | Post data                               |
+| rawpost      | ?array  | Post raw data (php://input)             |
+| files        | ?array  | Files data                              |
+| cookies      | ?array  | Cookies data                            |
+| server       | ?array  | Server data                             |
 
 ## Default log output values
 | Key       |  Type  | Adaptor                               |
@@ -32,6 +34,7 @@ Simple library to log hits in your php code, logging input, output, errors and e
 | end_time  | float  | End timestamp                         |
 | time      | float  | Total request time                    |
 | http_code |  int   | Response Code                         |
+| length    |  int   | Response Length                       |
 | headers   | ?array | Response Headers                      |
 | error     | ?array | Errors/Excpetions                     |
 | extra     | ?array | Extra data                            |
