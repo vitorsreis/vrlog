@@ -62,7 +62,7 @@ class VRLog
     public static function bootstrap($docId = null)
     {
         # LOAD .env
-        DotEnv::bootstrap(__DIR__ . '/../.env');
+        DotEnv::bootstrap(is_dir($env = __DIR__ . '/../.env') ? $env :"$env.development");
 
         # SET SKIP ULL LOG
         self::setTolerance(intval(DotEnv::get('VRLOG_TOLERANCE')) ?: false);
