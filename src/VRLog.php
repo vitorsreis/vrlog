@@ -293,7 +293,7 @@ class VRLog
                 'useragent'  => $userAgent,
                 'get'        => $_GET ?: null,
                 'post'       => $_POST ?: null,
-                'rawpost'    => file_get_contents('php://input') ?: null,
+                'rawpost'    => is_file('php://input') ? file_get_contents('php://input') : null,
                 'files'      => $_FILES ?: null,
                 'cookies'    => $_COOKIE ?: null,
                 'server'     => $_SERVER ?: null
@@ -328,6 +328,7 @@ class VRLog
                 'end_time'  => $endTime,
                 'time'      => $endTime - self::$startTime,
                 'http_code' => http_response_code() ?: '0',
+                'length'    => ob_get_length() ?: '0',
                 'headers'   => $headers,
                 'error'     => self::$error ?: null,
                 'extra'     => $extra,
@@ -346,7 +347,7 @@ class VRLog
     public static function ex($err)
     {
         if (filter_var(DotEnv::get('VRLOG_ELK_SERVER'), FILTER_VALIDATE_BOOLEAN)) {
-            throw new \Exception("VRLog: $err", E_ERROR);
+            throw new Exception("VRLog: $err", E_ERROR);
         } else {
             error_log('[' . date('Y-m-d H:i:s') . "] VRLog: $err" . PHP_EOL);
         }

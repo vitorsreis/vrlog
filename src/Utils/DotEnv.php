@@ -25,22 +25,22 @@ class DotEnv
     /**
      * @var bool Status adaptor for put in $_SERVER
      */
-    public static $adaptorSuperGlobalServer = true;
+    public static $adaptorSuperGlobalServer = false;
 
     /**
      * @var bool Status adaptor for put in $_ENV
      */
-    public static $adaptorSuperGlobalEnv = true;
+    public static $adaptorSuperGlobalEnv = false;
 
     /**
      * @var bool Status adaptor for put with function "apache_setenv"
      */
-    public static $adaptorApache = true;
+    public static $adaptorApache = false;
 
     /**
      * @var bool Status adaptor for put with function "putenv"
      */
-    public static $adaptorPutenv = true;
+    public static $adaptorPutenv = false;
 
     /**
      * @var bool Status adaptor for create constant with name if not exists
