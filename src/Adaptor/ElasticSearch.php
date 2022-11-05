@@ -8,6 +8,8 @@
 
 namespace VRLog\Adaptor;
 
+use Exception;
+use VRLog\Utils\DotEnv;
 use VRLog\Utils\IAdaptor;
 use VRLog\VRLog;
 
@@ -16,25 +18,28 @@ use VRLog\VRLog;
  *
  * @package VRLog\Adaptor
  * @author  Vitor Reis <vitor@d5w.com.br>
- * @since   Class available since Release: 1.0.0
  */
 class ElasticSearch implements IAdaptor
 {
     /**
-     * @var   array Request date
-     * @since Property available since Release: 1.0.0
+     * @var array Request date
      */
     private static $req;
-    
+
     /**
      * Method for bootstrap adaptor
      *
      * @param  string $docId Doc ID
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
+     * @throws Exception
      */
     public static function bootstrap($docId)
     {
+        if (!DotEnv::get('VRLOG_ELK_SERVER')) {
+            VRLog::ex('Require .env[VRLOG_ELK_SERVER] for file adaptor');
+            return false;
+        }
+
         return true;
     }
 
@@ -60,9 +65,9 @@ class ElasticSearch implements IAdaptor
      *   files:array|null,
      *   cookies:array|null,
      *   server:array|null
-     * } $data Request data
+     * } $data  Request data
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
+     * @throws Exception
      */
     public static function request($docId, $data)
     {
@@ -83,9 +88,9 @@ class ElasticSearch implements IAdaptor
      *   error:array|null,
      *   extra:array|null,
      *   inc_files:array|null
-     * } $data Response data
+     * }               $data  Response data
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
+     * @throws Exception
      */
     public static function response($docId, $data)
     {
@@ -98,36 +103,32 @@ class ElasticSearch implements IAdaptor
      * @param  string $docId  Doc id
      * @param  array  $source Source data
      * @return bool
-     * @since  Method available since Release: 1.0.0
+     * @throws Exception
      */
     private static function exec($docId, $source)
     {
         $headers = [
             'Content-Type: application/json; charset=utf-8'
         ];
-        if ($apikey = getenv('VRLOG_ELK_APIKEY')) {
+        if ($apikey = DotEnv::get('VRLOG_ELK_APIKEY')) {
             $headers[] = "Authorization: ApiKey $apikey";
         }
 
         $ch = curl_init();
         curl_setopt_array($ch, [
-            CURLOPT_URL            => getenv('VRLOG_ELK_SERVER') . "/_doc/$docId",
+            CURLOPT_URL            => DotEnv::get('VRLOG_ELK_SERVER') . "/_doc/$docId",
             CURLOPT_CUSTOMREQUEST  => 'PUT',
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_POSTFIELDS     => json_encode($source),
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => getenv('VRLOG_ELK_TIMEOUT') ?: 5
+            CURLOPT_TIMEOUT        => DotEnv::get('VRLOG_ELK_TIMEOUT') ?: 5
         ]);
         curl_exec($ch);
         $httpCode = intval(curl_getinfo($ch, CURLINFO_HTTP_CODE));
         curl_close($ch);
 
         if ($httpCode !== 200 && $httpCode !== 201) {
-            error_log(
-                '[' . date('Y-m-d H:i:s') . "] Failed elasticsearch save [$httpCode]" . PHP_EOL,
-                3,
-                VRLog::getTempDir() . '/error.log'
-            );
+            VRLog::ex("Failed elasticsearch save [$httpCode]");
             return false;
         }
         return true;

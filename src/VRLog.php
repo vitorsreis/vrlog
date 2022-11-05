@@ -8,6 +8,7 @@
 
 namespace VRLog;
 
+use Exception;
 use VRLog\Adaptor\ElasticSearch;
 use VRLog\Adaptor\File;
 use VRLog\Utils\DotEnv;
@@ -18,49 +19,36 @@ use VRLog\Utils\IAdaptor;
  *
  * @package VRLog
  * @author  Vitor Reis <vitor@d5w.com.br>
- * @since   Class available since Release: 1.0.0
  */
 class VRLog
 {
     /**
-     * @var   IAdaptor Log adaptor
-     * @since Property available since Release: 1.0.0
+     * @var IAdaptor Log adaptor
      */
     private static $adaptor;
 
     /**
-     * @var   string Temp directory
-     * @since Property available since Release: 1.0.0
-     */
-    private static $tempDir;
-
-    /**
-     * @var   string Doc ID
-     * @since Property available since Release: 1.0.0
+     * @var string Doc ID
      */
     private static $docId;
 
     /**
-     * @var   float Start time
-     * @since Property available since Release: 1.0.0
+     * @var float Start time
      */
     private static $startTime;
 
     /**
-     * @var   float|false Tolerance for skip full log if response is less than time
-     * @since Property available since Release: 1.0.0
+     * @var float|false Tolerance for skip full log if response is less than time
      */
     private static $tolerance;
 
     /**
-     * @var   array Errors
-     * @since Property available since Release: 1.0.0
+     * @var array Errors
      */
     private static $error = [];
 
     /**
-     * @var   array Extra data
-     * @since Property available since Release: 1.0.0
+     * @var array Extra data
      */
     private static $extra = [];
 
@@ -69,22 +57,15 @@ class VRLog
      *
      * @param  string|null $docId Doc ID
      * @return void
-     * @since  Method available since Release: 1.0.0
+     * @throws Exception
      */
     public static function bootstrap($docId = null)
     {
         # LOAD .env
-        new DotEnv(__DIR__ . '/../.env');
-
-        # SET TEMP DIR
-        if (getenv('VRLOG_TMP')) {
-            self::setTempDir(getenv('VRLOG_TMP'));
-        } else {
-            self::setTempDir(__DIR__ . '/../.tmp');
-        }
+        DotEnv::bootstrap(__DIR__ . '/../.env');
 
         # SET SKIP ULL LOG
-        self::setTolerance(getenv('VRLOG_TOLERANCE'));
+        self::setTolerance(DotEnv::get('VRLOG_TOLERANCE') ?: false);
 
         # GET START TIME
         if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
@@ -105,21 +86,23 @@ class VRLog
         self::setDocId($docId);
 
         # GET ADAPTOR
-        switch ($adaptor = getenv('VRLOG_ADAPTOR')) {
+        switch ($adaptor = DotEnv::get('VRLOG_ADAPTOR')) {
             case 'elasticsearch':
                 self::$adaptor = new ElasticSearch();
                 break;
 
-            default:
+            case 'file':
                 self::$adaptor = new File();
                 break;
+
+            default:
+                self::ex('Require .env[VRLOG_ADAPTOR]');
+                return;
         }
-        if (!((self::$adaptor)::bootstrap($docId))) {
-            error_log(
-                '[' . date('Y-m-d H:i:s') . "] Failed $adaptor bootstrap" . PHP_EOL,
-                3,
-                self::getTempDir() . '/error.log'
-            );
+
+        $instance = self::$adaptor;
+        if (!($instance::bootstrap($docId))) {
+            error_log('[' . date('Y-m-d H:i:s') . "] VRLog: Failed $adaptor bootstrap" . PHP_EOL);
             return;
         }
 
@@ -150,7 +133,6 @@ class VRLog
      * Method for get doc id
      *
      * @return string Return doc id
-     * @since  Method available since Release: 1.0.0
      */
     public static function getDocId()
     {
@@ -162,7 +144,6 @@ class VRLog
      *
      * @param  string $docId Doc id
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
     private static function setDocId($docId)
     {
@@ -173,7 +154,6 @@ class VRLog
      * Method for get start time
      *
      * @return float Start time
-     * @since  Method available since Release: 1.0.0
      */
     public static function getStartTime()
     {
@@ -185,7 +165,6 @@ class VRLog
      *
      * @param  float $startTime Start time
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
     private static function setStartTime($startTime)
     {
@@ -196,7 +175,6 @@ class VRLog
      * Method for set tolerance for skip full log time
      *
      * @return float|false Skip full log time or false
-     * @since  Method available since Release: 1.0.0
      */
     public static function getTolerance()
     {
@@ -208,38 +186,10 @@ class VRLog
      *
      * @param  float|false $tolerance Skip full log time
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
     public static function setTolerance($tolerance)
     {
         self::$tolerance = $tolerance;
-    }
-
-    /**
-     * Method for get temp directory
-     *
-     * @return string
-     * @since  Method available since Release: 1.0.0
-     */
-    public static function getTempDir()
-    {
-        return self::$tempDir;
-    }
-
-    /**
-     * Method for set temp directory
-     *
-     * @param  string $dir Temp directory
-     * @return void
-     * @since  Method available since Release: 1.0.0
-     */
-    public static function setTempDir($dir)
-    {
-        self::$tempDir = $dir;
-
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
     }
 
     /**
@@ -249,7 +199,6 @@ class VRLog
      * @param  string $value  Extra value
      * @param  string $append if "true" append value in array, else clear array before append vale
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
     public static function extra($key, $value, $append = true)
     {
@@ -268,7 +217,6 @@ class VRLog
      * @param  string $errfile
      * @param  int    $errline
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
     private static function errorEvent($errno, $errstr, $errfile, $errline)
     {
@@ -279,7 +227,6 @@ class VRLog
      * Method for log request (start connection)
      *
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
     private static function saveRequest()
     {
@@ -287,8 +234,10 @@ class VRLog
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
         } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } else {
+        } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
             $ip = $_SERVER['REMOTE_ADDR'];
+        } else {
+            $ip = null;
         }
 
         if (!empty($_SERVER['HTTP_REFERER'])) {
@@ -303,16 +252,41 @@ class VRLog
             $userAgent = null;
         }
 
-        (self::$adaptor)::request(
+        if (!empty($_SERVER['REQUEST_METHOD'])) {
+            $method = $_SERVER['REQUEST_METHOD'];
+        } else {
+            $method = null;
+        }
+
+        if (!empty($_SERVER['REQUEST_SCHEME'])) {
+            $scheme = $_SERVER['REQUEST_SCHEME'];
+        } else {
+            $scheme = null;
+        }
+
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $host = $_SERVER['HTTP_HOST'];
+        } else {
+            $host = null;
+        }
+
+        if (!empty($_SERVER['REQUEST_URI'])) {
+            $uri = $_SERVER['REQUEST_URI'];
+        } else {
+            $uri = null;
+        }
+
+        $instance = self::$adaptor;
+        $instance::request(
             self::$docId,
             array_filter([
                 'start_date' => date('c\Z', (int)self::$startTime),
                 'start_time' => self::$startTime,
-                'method'     => $_SERVER['REQUEST_METHOD'],
+                'method'     => $method,
                 'url'        => [
-                    'scheme' => $_SERVER['REQUEST_SCHEME'],
-                    'host'   => $_SERVER['HTTP_HOST'],
-                    'uri'    => $_SERVER['REQUEST_URI']
+                    'scheme' => $scheme,
+                    'host'   => $host,
+                    'uri'    => $uri
                 ],
                 'ip'         => $ip,
                 'referer'    => $referer,
@@ -331,7 +305,6 @@ class VRLog
      * Method for log response (end connection)
      *
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
     private static function saveResponse()
     {
@@ -347,7 +320,8 @@ class VRLog
             $incFiles = get_included_files();
         }
 
-        (self::$adaptor)::response(
+        $instance = self::$adaptor;
+        $instance::response(
             self::$docId,
             array_filter([
                 'end_date' => date('c\Z', (int)$endTime),
@@ -360,5 +334,21 @@ class VRLog
                 'inc_files' => $incFiles
             ])
         );
+    }
+
+    /**
+     * Method for error alert
+     *
+     * @param  string $err
+     * @return void
+     * @throws Exception
+     */
+    public static function ex($err)
+    {
+        if (DotEnv::get('VRLOG_ELK_SERVER')) {
+            throw new \Exception("VRLog: $err", E_ERROR);
+        } else {
+            error_log('[' . date('Y-m-d H:i:s') . "] VRLog: $err" . PHP_EOL);
+        }
     }
 }

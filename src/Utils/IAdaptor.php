@@ -13,7 +13,6 @@ namespace VRLog\Utils;
  *
  * @package VRLog\Utils
  * @author  Vitor Reis <vitor@d5w.com.br>
- * @since   Interface available since Release: 1.0.0
  */
 interface IAdaptor
 {
@@ -22,7 +21,6 @@ interface IAdaptor
      *
      * @param  string $docId Doc ID
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
      */
     public static function bootstrap($docId);
 
@@ -50,7 +48,6 @@ interface IAdaptor
      *   server:array|null
      * } $data Request data
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
      */
     public static function request($docId, $data);
 
@@ -69,7 +66,6 @@ interface IAdaptor
      *   inc_files:array|null
      * } $data Response data
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
      */
     public static function response($docId, $data);
 }

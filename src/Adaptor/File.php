@@ -8,6 +8,8 @@
 
 namespace VRLog\Adaptor;
 
+use Exception;
+use VRLog\Utils\DotEnv;
 use VRLog\Utils\IAdaptor;
 use VRLog\VRLog;
 
@@ -16,30 +18,33 @@ use VRLog\VRLog;
  *
  * @package VRLog\Adaptor
  * @author  Vitor Reis <vitor@d5w.com.br>
- * @since   Class available since Release: 1.0.0
  */
 class File implements IAdaptor
 {
     /**
-     * @var   string Log directory
-     * @since Property available since Release: 1.0.0
+     * @var string Data directory
      */
-    private static $directory;
+    private static $dir;
 
     /**
      * Method for bootstrap adaptor
      *
      * @param  string $docId Doc ID
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
+     * @throws Exception
      */
     public static function bootstrap($docId)
     {
-        # SET LOG DIRECTORY
-        self::$directory = VRLog::getTempDir() . "/$docId/";
+        if (!DotEnv::get('VRLOG_ELK_SERVER')) {
+            VRLog::ex('Require .env[VRLOG_FILE_DIR] for file adaptor');
+            return false;
+        }
+
+        # SET DATA DIRECTORY
+        self::$dir = DotEnv::get('VRLOG_FILE_DIR') . "/$docId/";
 
         # CREATE DIRECTORY IF NOT EXISTS
-        return is_dir(self::$directory) || mkdir(self::$directory, 0755, true);
+        return is_dir(self::$dir) || mkdir(self::$dir, 0755, true);
     }
 
     /**
@@ -66,11 +71,10 @@ class File implements IAdaptor
      *   server:array|null
      * } $data Request data
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
      */
     public static function request($docId, $data)
     {
-        return error_log(json_encode($data), 3, self::$directory . 'req.log');
+        return error_log(json_encode($data), 3, self::$dir . 'req.log');
     }
 
     /**
@@ -88,10 +92,9 @@ class File implements IAdaptor
      *   inc_files:array|null
      * } $data Response data
      * @return bool Return "true" if success, else "false"
-     * @since  Method available since Release: 1.0.0
      */
     public static function response($docId, $data)
     {
-        return error_log(json_encode($data), 3, self::$directory . 'res.log');
+        return error_log(json_encode($data), 3, self::$dir . 'res.log');
     }
 }

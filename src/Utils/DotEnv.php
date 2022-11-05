@@ -13,56 +13,51 @@ namespace VRLog\Utils;
  *
  * @package VRLog\Utils
  * @author  Vitor Reis <vitor@d5w.com.br>
- * @since   Class available since Release: 1.0.0
  */
 
 class DotEnv
 {
     /**
-     * @var   string[] .env values
-     * @since Property available since Release: 1.0.0
+     * @var string[] Env values
      */
-    private $list = [];
+    private static $memory = [];
 
     /**
-     * @var   bool Status adaptor for put in $_SERVER
-     * @since Property available since Release: 1.0.0
+     * @var bool Status adaptor for put in $_SERVER
      */
     public static $adaptorSuperGlobalServer = true;
 
     /**
-     * @var   bool Status adaptor for put in $_ENV
-     * @since Property available since Release: 1.0.0
+     * @var bool Status adaptor for put in $_ENV
      */
     public static $adaptorSuperGlobalEnv = true;
 
     /**
-     * @var   bool Status adaptor for put with function "apache_setenv"
-     * @since Property available since Release: 1.0.0
+     * @var bool Status adaptor for put with function "apache_setenv"
      */
     public static $adaptorApache = true;
 
     /**
-     * @var   bool Status adaptor for put with function "putenv"
-     * @since Property available since Release: 1.0.0
+     * @var bool Status adaptor for put with function "putenv"
      */
     public static $adaptorPutenv = true;
 
     /**
-     * @var   bool Status adaptor for create constant with name if not exists
-     * @since Property available since Release: 1.0.0
+     * @var bool Status adaptor for create constant with name if not exists
      */
     public static $adaptorConstant = false;
 
     /**
+     * Method for bootstrap .env
+     *
      * @param string|string[] $filename       File or files for load
      * @param bool            $readFromMemory Read super global $_ENV
      */
-    public function __construct($filename, $readFromMemory = true)
+    public static function bootstrap($filename, $readFromMemory = true)
     {
         if ($readFromMemory) {
             foreach ($_ENV as $name => $value) {
-                $this->put($name, $value);
+                self::put($name, $value);
             }
         }
 
@@ -71,7 +66,7 @@ class DotEnv
         }
 
         foreach ($filename as $i) {
-            $this->load($i);
+            self::load($i);
         }
     }
 
@@ -80,11 +75,10 @@ class DotEnv
      *
      * @param  string $name .env name
      * @return string|null
-     * @since  Method available since Release: 1.0.0
      */
-    public function get($name)
+    public static function get($name)
     {
-        return isset($this->list[$name]) ? $this->list[$name] : null;
+        return isset(self::$memory[$name]) ? self::$memory[$name] : null;
     }
 
     /**
@@ -93,9 +87,8 @@ class DotEnv
      * @param  string $name
      * @param  string $value
      * @return void
-     * @since  Method available since Release: 1.0.0
      */
-    public function put($name, $value)
+    public static function put($name, $value)
     {
         if (self::$adaptorSuperGlobalServer && isset($_SERVER)) {
             # WRITE SUPER GLOBAL $_SERVER
@@ -113,12 +106,17 @@ class DotEnv
         }
 
         if (self::$adaptorPutenv && function_exists('putenv')) {
-            # WRITE APACHE
+            # WRITE ENV
             putenv("$name=$value");
         }
 
+        if (self::$adaptorConstant && function_exists('putenv')) {
+            # WRITE CONSTANT
+            define($name, $value);
+        }
+
         # WRITE CURRENT INSTANCE
-        $this->list[$name] = $value;
+        self::$memory[$name] = $value;
     }
 
     /**
@@ -126,9 +124,8 @@ class DotEnv
      *
      * @param  string $filename DotEnv Filename
      * @return bool
-     * @since  Method available since Release: 1.0.0
      */
-    public function load($filename)
+    public static function load($filename)
     {
         if (!is_file($filename)) {
             return false;
@@ -150,7 +147,7 @@ class DotEnv
                 continue;
             }
 
-            $this->put(trim($split[0]), trim($split[1]));
+            self::put(trim($split[0]), trim($split[1]));
         }
         return true;
     }
