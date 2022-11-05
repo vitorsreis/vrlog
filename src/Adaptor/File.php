@@ -35,7 +35,7 @@ class File implements IAdaptor
      */
     public static function bootstrap($docId)
     {
-        if (!DotEnv::get('VRLOG_ELK_SERVER')) {
+        if (!DotEnv::get('VRLOG_FILE_DIR')) {
             VRLog::ex('Require .env[VRLOG_FILE_DIR] for file adaptor');
             return false;
         }
