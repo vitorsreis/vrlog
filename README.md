@@ -32,19 +32,24 @@ Simple library to log hits in your php code, logging input, output, errors and e
 | server       | ?array  | Server data                             |
 
 ## Default log output values
-| Key         |  Type  | Adaptor                               |
-|:------------|:------:|---------------------------------------|
-| end_date    | string | End date (YYYY-MM-DDTHH:mm:ss+00:00Z) |
-| end_time    | float  | End timestamp                         |
-| time        | float  | Total request time                    |
-| http_code   |  int   | Response Code                         |
-| length      |  int   | Response Length                       |
-| headers     | ?array | Response Headers                      |
-| error       | ?array | Errors/Excpetions                     |
-| extra       | ?array | Extra data                            |
-| inc_files   | ?array | Included files                        |
-| memory      |  int   | Memory usage                          |
-| memory_peak |  int   | Memory peak usage                     |
+| Key                  |  Type   | Adaptor                                |
+|:---------------------|:-------:|----------------------------------------|
+| end_date             | string  | End date (YYYY-MM-DDTHH:mm:ss+00:00Z)  |
+| end_time             |  float  | End timestamp                          |
+| time                 |  float  | Total request time                     |
+| http_code            |   int   | Response Code                          |
+| length               |   int   | Response Length                        |
+| headers              | ?array  | Response Headers                       |
+| error                | ?array  | ↓                                      |
+| • error\[]\[code]    |  ?int   | Errors/Excpetions code                 |
+| • error\[]\[message] | ?string | Errors/Excpetions message              |
+| • error\[]\[file]    | ?string | Errors/Excpetions file                 |
+| • error\[]\[line]    |  ?int   | Errors/Excpetions line                 |
+| extra                | ?array  | ↓                                      |
+| • extra\[\<key>][]   | ?string | Extra data key and array string values |
+| inc_files            | ?array  | Included files                         |
+| memory               |   int   | Memory usage                           |
+| memory_peak          |   int   | Memory peak usage                      |
 
 ## Add extra values using
     VRLog\VRLog::extra("name", "john");

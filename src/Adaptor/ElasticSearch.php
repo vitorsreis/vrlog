@@ -132,7 +132,7 @@ class ElasticSearch implements IAdaptor
             CURLOPT_URL            => DotEnv::get('VRLOG_ELK_SERVER') . "/_doc/$docId",
             CURLOPT_CUSTOMREQUEST  => 'PUT',
             CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_POSTFIELDS     => json_encode($source),
+            CURLOPT_POSTFIELDS     => json_encode($source, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => DotEnv::get('VRLOG_ELK_TIMEOUT') ?: 5
         ]);

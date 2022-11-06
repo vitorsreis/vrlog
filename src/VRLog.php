@@ -201,8 +201,8 @@ class VRLog
      * Method for set extra data
      *
      * @param  string $key    Extra key
-     * @param  string $value  Extra value
-     * @param  string $append if "true" append value in array, else clear array before append vale
+     * @param  mixed  $value  Extra value
+     * @param  bool   $append if "true" append value in array, else clear array before append vale
      * @return void
      */
     public static function extra($key, $value, $append = true)
@@ -211,7 +211,11 @@ class VRLog
             self::$extra[$key] = [];
         }
 
-        self::$extra[$key][] = $value;
+        if (is_array($value) || is_object($value)) {
+            $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        self::$extra[$key][] = "$value";
     }
 
     /**
@@ -225,7 +229,12 @@ class VRLog
      */
     private static function errorEvent($errno, $errstr, $errfile, $errline)
     {
-        self::$error[] = [ $errno, $errstr, $errfile, $errline ];
+        self::$error[] = [
+            "code"    => $errno,
+            "message" => $errstr,
+            "file"    => $errfile,
+            "line"    => $errline
+        ];
     }
 
     /**
