@@ -136,12 +136,12 @@ class ElasticSearch implements IAdaptor
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT        => DotEnv::get('VRLOG_ELK_TIMEOUT') ?: 5
         ]);
-        curl_exec($ch);
+        $content = curl_exec($ch);
         $httpCode = intval(curl_getinfo($ch, CURLINFO_HTTP_CODE));
         curl_close($ch);
 
         if ($httpCode !== 200 && $httpCode !== 201) {
-            VRLog::ex("Failed elasticsearch save [$httpCode]");
+            VRLog::ex("Failed elasticsearch save [$httpCode] $content");
             return false;
         }
         return true;
