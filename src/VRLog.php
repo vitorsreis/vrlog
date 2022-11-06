@@ -354,10 +354,10 @@ class VRLog
      */
     public static function ex($err)
     {
-        if (filter_var(DotEnv::get('VRLOG_ELK_SERVER'), FILTER_VALIDATE_BOOLEAN)) {
+        error_log('[' . date('Y-m-d H:i:s') . "] VRLog: $err" . PHP_EOL);
+
+        if (filter_var(DotEnv::get('VRLOG_DEBUG'), FILTER_VALIDATE_BOOLEAN)) {
             throw new Exception("VRLog: $err", E_ERROR);
-        } else {
-            error_log('[' . date('Y-m-d H:i:s') . "] VRLog: $err" . PHP_EOL);
         }
     }
 }
