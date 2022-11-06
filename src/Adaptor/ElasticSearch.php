@@ -76,11 +76,12 @@ class ElasticSearch implements IAdaptor
         $data['end_time'] = -1;
         $data['time'] = -1;
         $data['http_code'] = -1;
-        $data['length'] = -1;
         $data['headers'] = null;
         $data['error'] = null;
         $data['extra'] = null;
         $data['inc_files'] = null;
+        $data['memory'] = -1;
+        $data['memory_peak'] = -1;
 
         return self::exec($docId, self::$req = $data);
     }
@@ -94,7 +95,6 @@ class ElasticSearch implements IAdaptor
      *   end_time:float,
      *   time:float,
      *   http_code:int,
-     *   length:int,
      *   headers:array|null,
      *   error:array|null,
      *   extra:array|null,

@@ -129,9 +129,6 @@ class VRLog
         register_shutdown_function(function () {
             self::saveResponse();
         });
-
-        # START OB FOR GET LENGTH
-        ob_start();
     }
 
     /**
@@ -342,7 +339,6 @@ class VRLog
                 'end_time'    => $endTime,
                 'time'        => $endTime - self::$startTime,
                 'http_code'   => http_response_code() ?: '0',
-                'length'      => ob_get_length() ?: '0',
                 'headers'     => $headers,
                 'error'       => self::$error ?: null,
                 'extra'       => $extra,
@@ -351,7 +347,6 @@ class VRLog
                 'memory_peak' => memory_get_peak_usage(true)
             ])
         );
-        ob_end_flush();
     }
 
     /**

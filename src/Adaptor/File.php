@@ -87,7 +87,6 @@ class File implements IAdaptor
      *   end_time:float,
      *   time:float,
      *   http_code:int,
-     *   length:int,
      *   headers:array|null,
      *   error:array|null,
      *   extra:array|null,

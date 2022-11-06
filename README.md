@@ -38,7 +38,6 @@ Simple library to log hits in your php code, logging input, output, errors and e
 | end_time             |  float  | End timestamp                          |
 | time                 |  float  | Total request time                     |
 | http_code            |   int   | Response Code                          |
-| length               |   int   | Response Length                        |
 | headers              | ?array  | Response Headers                       |
 | error                | ?array  | ↓                                      |
 | • error\[]\[code]    |  ?int   | Errors/Excpetions code                 |
