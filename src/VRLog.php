@@ -229,7 +229,7 @@ class VRLog
      */
     private static function errorEvent($errno, $errstr, $errfile, $errline)
     {
-        if (error_reporting() === 0 || (error_reporting() & $code) !== $code) {
+        if (error_reporting() === 0 || (error_reporting() & $errno) !== $errno) {
             return; # SUPPRESSED ERROR
         }
 
