@@ -83,6 +83,17 @@ class DotEnv
     }
 
     /**
+     * Method for check instance has putted value
+     *
+     * @param  string $name .env name
+     * @return bool
+     */
+    public static function has($name)
+    {
+        return isset(self::$memory[$name]);
+    }
+
+    /**
      * Method for put name and value in .env memory
      *
      * @param  string $name

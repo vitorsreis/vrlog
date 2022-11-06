@@ -61,8 +61,10 @@ class VRLog
      */
     public static function bootstrap($docId = null)
     {
-        # LOAD .env
-        DotEnv::bootstrap(is_file($env = __DIR__ . '/../.env') ? $env :"$env.development");
+        # TRY .env LOAD IF ADAPTOR KEY NOT EXISTS
+        if (!DotEnv::has('VRLOG_ADAPTOR')) {
+            DotEnv::bootstrap(is_file($env = __DIR__ . '/../.env') ? $env :"$env.development");
+        }
 
         # SET SKIP ULL LOG
         self::setTolerance(intval(DotEnv::get('VRLOG_TOLERANCE')) ?: false);
@@ -357,10 +359,5 @@ class VRLog
         } else {
             error_log('[' . date('Y-m-d H:i:s') . "] VRLog: $err" . PHP_EOL);
         }
-    }
-
-    public function __destruct()
-    {
-        self::saveResponse();
     }
 }
