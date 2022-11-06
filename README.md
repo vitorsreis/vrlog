@@ -6,6 +6,7 @@ Simple library to log hits in your php code, logging input, output, errors and e
 
 ## Simple usage
     require_once __DIR__ . "/vendor/autoload.php";
+    // \VRLog\Utils\DotEnv::bootstrap(__DIR__ . '/.env');
     VRLog\VRLog::bootstrap();
 
 ## Default log input values
@@ -28,17 +29,19 @@ Simple library to log hits in your php code, logging input, output, errors and e
 | server       | ?array  | Server data                             |
 
 ## Default log output values
-| Key       |  Type  | Adaptor                               |
-|:----------|:------:|---------------------------------------|
-| end_date  | string | End date (YYYY-MM-DDTHH:mm:ss+00:00Z) |
-| end_time  | float  | End timestamp                         |
-| time      | float  | Total request time                    |
-| http_code |  int   | Response Code                         |
-| length    |  int   | Response Length                       |
-| headers   | ?array | Response Headers                      |
-| error     | ?array | Errors/Excpetions                     |
-| extra     | ?array | Extra data                            |
-| inc_files | ?array | Included files                        |
+| Key         |  Type  | Adaptor                               |
+|:------------|:------:|---------------------------------------|
+| end_date    | string | End date (YYYY-MM-DDTHH:mm:ss+00:00Z) |
+| end_time    | float  | End timestamp                         |
+| time        | float  | Total request time                    |
+| http_code   |  int   | Response Code                         |
+| length      |  int   | Response Length                       |
+| headers     | ?array | Response Headers                      |
+| error       | ?array | Errors/Excpetions                     |
+| extra       | ?array | Extra data                            |
+| inc_files   | ?array | Included files                        |
+| memory      |  int   | Memory usage                          |
+| memory_peak |  int   | Memory peak usage                     |
 
 ## Add extra values using
     VRLog\VRLog::extra("name", "john");
