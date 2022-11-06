@@ -98,8 +98,10 @@ class ElasticSearch implements IAdaptor
      *   headers:array|null,
      *   error:array|null,
      *   extra:array|null,
-     *   inc_files:array|null
-     * }               $data  Response data
+     *   inc_files:array|null,
+     *   memory:int,
+     *   memory_peak:int
+     * } $data Response data
      * @return bool Return "true" if success, else "false"
      * @throws Exception
      */

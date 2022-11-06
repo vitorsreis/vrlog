@@ -127,6 +127,9 @@ class VRLog
         register_shutdown_function(function () {
             self::saveResponse();
         });
+
+        # START OB FOR GET LENGTH
+        ob_start();
     }
 
     /**
@@ -324,17 +327,20 @@ class VRLog
         $instance::response(
             self::$docId,
             array_filter([
-                'end_date' => date('c\Z', (int)$endTime),
-                'end_time'  => $endTime,
-                'time'      => $endTime - self::$startTime,
-                'http_code' => http_response_code() ?: '0',
-                'length'    => ob_get_length() ?: '0',
-                'headers'   => $headers,
-                'error'     => self::$error ?: null,
-                'extra'     => $extra,
-                'inc_files' => $incFiles
+                'end_date'    => date('c\Z', (int)$endTime),
+                'end_time'    => $endTime,
+                'time'        => $endTime - self::$startTime,
+                'http_code'   => http_response_code() ?: '0',
+                'length'      => ob_get_length() ?: '0',
+                'headers'     => $headers,
+                'error'       => self::$error ?: null,
+                'extra'       => $extra,
+                'inc_files'   => $incFiles,
+                'memory'      => memory_get_usage(true),
+                'memory_peak' => memory_get_peak_usage(true)
             ])
         );
+        ob_end_flush();
     }
 
     /**
@@ -351,5 +357,10 @@ class VRLog
         } else {
             error_log('[' . date('Y-m-d H:i:s') . "] VRLog: $err" . PHP_EOL);
         }
+    }
+
+    public function __destruct()
+    {
+        self::saveResponse();
     }
 }

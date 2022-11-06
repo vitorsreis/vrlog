@@ -50,8 +50,9 @@ class DotEnv
     /**
      * Method for bootstrap .env
      *
-     * @param string|string[] $filename       File or files for load
-     * @param bool            $readFromMemory Read super global $_ENV
+     * @param  string|string[] $filename       File or files for load
+     * @param  bool            $readFromMemory Read super global $_ENV
+     * @return void
      */
     public static function bootstrap($filename, $readFromMemory = true)
     {
