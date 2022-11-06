@@ -6,7 +6,10 @@ Simple library to log hits in your php code, logging input, output, errors and e
 
 ## Simple usage
     require_once __DIR__ . "/vendor/autoload.php";
+    
+    // Use for load your .env configs
     // \VRLog\Utils\DotEnv::bootstrap(__DIR__ . '/.env');
+    
     VRLog\VRLog::bootstrap();
 
 ## Default log input values
