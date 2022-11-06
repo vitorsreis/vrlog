@@ -111,18 +111,21 @@ class VRLog
         # SAVE REQUEST
         self::saveRequest();
 
-        # SET HANDLE ERROR/EXCEPTION
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+        # SET ERRORS CAPTURE
+        $previousEr = set_error_handler(function ($errno, $errstr, $errfile, $errline) use (&$previousEr) {
             self::errorEvent($errno, $errstr, $errfile, $errline);
+            return $previousEr ? call_user_func_array($previousEr, [ $errno, $errstr, $errfile, $errline ]) : false;
         }, E_ALL);
 
-        set_exception_handler(function ($exception) {
+        # SET EXCEPTIONS CAPTURE
+        $previousEx = set_exception_handler(function ($exception) use (&$previousEx) {
             self::errorEvent(
                 $exception->getCode(),
                 $exception->getMessage(),
                 $exception->getFile(),
                 $exception->getLine()
             );
+            return $previousEx ? call_user_func_array($previousEx, [ $exception ]) : false;
         });
 
         # SET HANDLE SHUTDOWN
@@ -226,6 +229,10 @@ class VRLog
      */
     private static function errorEvent($errno, $errstr, $errfile, $errline)
     {
+        if (error_reporting() === 0 || (error_reporting() & $code) !== $code) {
+            return; # SUPPRESSED ERROR
+        }
+
         self::$error[] = [
             "code"    => $errno,
             "message" => $errstr,
