@@ -14,7 +14,6 @@ namespace VRLog\Utils;
  * @package VRLog\Utils
  * @author  Vitor Reis <vitor@d5w.com.br>
  */
-
 class DotEnv
 {
     /**
